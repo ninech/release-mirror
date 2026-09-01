@@ -35,7 +35,7 @@ func run() int {
 	logger, lvl := initLogger(os.Stderr)
 
 	// Bind GOMEMLIMIT to the cgroup memory limit so the Go GC respects container ceilings.
-	if _, err := memlimit.SetGoMemLimitWithOpts(); err != nil {
+	if _, err := memlimit.Set(); err != nil {
 		logger.DebugContext(ctx, "failed to set memory limit", "err", err)
 	}
 
