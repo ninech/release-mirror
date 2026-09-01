@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/kong v1.16.1
 	github.com/felixge/fgprof v0.9.5
 	github.com/getsentry/sentry-go v0.48.0
-	github.com/go-chi/chi/v5 v5.3.1
+	github.com/go-chi/chi/v5 v5.3.2
 	github.com/go-chi/httplog/v3 v3.4.0
 	github.com/go-chi/metrics v0.1.1
 	github.com/go-chi/traceid v0.3.0
