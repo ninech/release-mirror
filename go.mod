@@ -3,7 +3,7 @@ module github.com/ninech/release-mirror
 go 1.26.6
 
 require (
-	github.com/KimMachineGun/automemlimit v0.7.5
+	github.com/KimMachineGun/automemlimit v1.0.0
 	github.com/alecthomas/kong v1.16.1
 	github.com/felixge/fgprof v0.9.5
 	github.com/getsentry/sentry-go v0.48.0
