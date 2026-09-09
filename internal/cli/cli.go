@@ -13,9 +13,10 @@ import (
 )
 
 type root struct {
-	Verbose       bool     `help:"Enable debug mode."`
-	SentryDSN     *url.URL `help:"Sentry DSN for error reporting."`
-	SentryAppName string   `help:"Application name for error reporting." env:"RELEASE_MIRROR_SENTRY_APP_NAME,DEPLOIO_APP_NAME"`
+	Verbose                bool     `help:"Enable debug mode."`
+	SentryDSN              *url.URL `help:"Sentry DSN for error reporting."`
+	SentryAppName          string   `help:"Application name for error reporting." env:"RELEASE_MIRROR_SENTRY_APP_NAME,DEPLOIO_APP_NAME"`
+	SentryTracesSampleRate float64  `help:"Fraction of requests traced and reported to Sentry (0 disables tracing)." default:"0"`
 
 	Serve       ServeCmd       `cmd:"" default:"withargs" help:"Serve the release mirror."`
 	HealthCheck HealthCheckCmd `cmd:"" help:"Check whether the server is healthy."`
@@ -45,7 +46,12 @@ func Run(ctx context.Context, logger *slog.Logger, lvl *slog.LevelVar, info *Bui
 		lvl.Set(slog.LevelDebug)
 	}
 
-	cleanup, sentryHandler := initSentry(cli.SentryDSN, cli.Verbose, cli.SentryAppName, info, logger.WithGroup("sentry"))
+	cleanup, sentryHandler := initSentry(sentryOptions{
+		dsn:              cli.SentryDSN,
+		debug:            cli.Verbose,
+		appName:          cli.SentryAppName,
+		tracesSampleRate: cli.SentryTracesSampleRate,
+	}, info, logger.WithGroup("sentry"))
 	defer cleanup()
 
 	// Defers run LIFO: reportPanic executes before Sentry flush cleanup.
@@ -53,6 +59,7 @@ func Run(ctx context.Context, logger *slog.Logger, lvl *slog.LevelVar, info *Bui
 
 	if sentryHandler != nil {
 		c.logger = slog.New(fanoutHandler{handlers: []slog.Handler{logger.Handler(), sentryHandler}})
+		c.sentry = true
 	}
 
 	logger.InfoContext(ctx, "starting",
@@ -69,4 +76,5 @@ type cmd struct {
 	logger *slog.Logger
 	build  BuildInfo
 	w      io.Writer
+	sentry bool
 }
