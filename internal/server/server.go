@@ -65,6 +65,15 @@ func WithMetrics() Option {
 	return func(s *Server) { s.metrics = true }
 }
 
+// WithSentry enables Sentry request instrumentation.
+// It requires [sentry.Init] to have run.
+func WithSentry(tracePropagationTargets ...string) Option {
+	return func(s *Server) {
+		s.sentry = true
+		s.sentryTargets = tracePropagationTargets
+	}
+}
+
 // WithProfileBasicAuth protects /debug/ endpoints with HTTP Basic Authentication.
 func WithProfileBasicAuth(username, password string) Option {
 	return func(s *Server) {
@@ -93,6 +102,8 @@ type Server struct {
 	profilePassword string
 	trustedProxies  int
 	metrics         bool
+	sentry          bool
+	sentryTargets   []string
 
 	router   *chi.Mux
 	compress func(http.Handler) http.HandlerFunc
@@ -204,6 +215,14 @@ func (s *Server) buildRouter() *chi.Mux {
 	}))
 
 	r.Use(middleware.Heartbeat("/healthz"))
+
+	// Registered after Heartbeat so health checks short-circuit before a
+	// transaction is started, and inside the httplog recoverer so panics are
+	// captured before they are logged.
+	if s.sentry {
+		r.Use(sentryHandler())
+		r.Use(sentryRouteName)
+	}
 
 	r.Get("/favicon", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNoContent)

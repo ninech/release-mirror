@@ -53,6 +53,9 @@ func (s *ServeCmd) Run(ctx context.Context, c *cmd) error {
 	if metricsEnabled {
 		opts = append(opts, server.WithMetrics())
 	}
+	if c.sentry {
+		opts = append(opts, server.WithSentry(s.traceTargets()...))
+	}
 	srv, err := server.New(opts...)
 	if err != nil {
 		return fmt.Errorf("create server: %w", err)
@@ -170,6 +173,18 @@ func (s *ServeCmd) mirror(ctx context.Context, srv *server.Server, logger *slog.
 		"allow", policy.Allowed(),
 		"deny", policy.Denied())
 	return m, nil
+}
+
+// traceTargets returns the hosts Sentry may propagate a trace to. Only the
+// object store qualifies: every other outgoing request fetches an asset from an
+// upstream release host, which is a third party and has no use for our trace.
+// An unparsable endpoint yields no target and is reported by the S3 client.
+func (s *ServeCmd) traceTargets() []string {
+	host, _, err := s.endpoint()
+	if err != nil {
+		return nil
+	}
+	return []string{host}
 }
 
 func (s *ServeCmd) address() string {

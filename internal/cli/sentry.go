@@ -15,22 +15,35 @@ import (
 	slogsentry "github.com/samber/slog-sentry/v2"
 )
 
+// sentryOptions carries the Sentry configuration collected from the CLI flags.
+type sentryOptions struct {
+	dsn              *url.URL
+	debug            bool
+	appName          string
+	tracesSampleRate float64
+}
+
 // initSentry initializes Sentry and returns a cleanup flush func and an error-level slog.Handler.
-func initSentry(dsn *url.URL, debug bool, appName string, info *BuildInfo, logger *slog.Logger) (func(), slog.Handler) {
-	if dsn == nil || dsn.String() == "" {
-		logger.Debug("no DSN provided", "dsn", dsn)
+func initSentry(o sentryOptions, info *BuildInfo, logger *slog.Logger) (func(), slog.Handler) {
+	if o.dsn == nil || o.dsn.String() == "" {
+		logger.Debug("no DSN provided", "dsn", o.dsn)
 		return func() {}, nil
 	}
 
-	logger.Debug("initializing", "debug", debug)
+	logger.Debug("initializing", "debug", o.debug, "traces_sample_rate", o.tracesSampleRate)
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              dsn.String(),
-		Debug:            debug,
+		Dsn:              o.dsn.String(),
+		Debug:            o.debug,
 		DebugWriter:      sentryLogWriter{logger: logger, lvl: slog.LevelDebug},
 		DataCollection:   &sentry.DataCollection{},
-		ServerName:       appName,
+		ServerName:       o.appName,
 		Release:          info.Commit,
 		AttachStacktrace: true,
+		// Performance data is opt-in: without a sample rate the HTTP
+		// instrumentation still scopes and reports errors, but transactions
+		// are dropped before delivery.
+		EnableTracing:    o.tracesSampleRate > 0,
+		TracesSampleRate: o.tracesSampleRate,
 		HTTPClient: &http.Client{
 			Timeout:   5 * time.Second,
 			Transport: gzhttp.Transport(http.DefaultTransport),
