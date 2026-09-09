@@ -27,7 +27,7 @@ func initSentry(dsn *url.URL, debug bool, appName string, info *BuildInfo, logge
 		Dsn:              dsn.String(),
 		Debug:            debug,
 		DebugWriter:      sentryLogWriter{logger: logger, lvl: slog.LevelDebug},
-		SendDefaultPII:   true,
+		DataCollection:   &sentry.DataCollection{},
 		ServerName:       appName,
 		Release:          info.Commit,
 		AttachStacktrace: true,
