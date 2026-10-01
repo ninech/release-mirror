@@ -12,7 +12,7 @@ require (
 	github.com/go-chi/metrics v0.1.1
 	github.com/go-chi/traceid v0.3.0
 	github.com/go-chi/transport v0.6.1
-	github.com/klauspost/compress v1.20.0
+	github.com/klauspost/compress v1.20.1
 	github.com/lmittmann/tint v1.2.0
 	github.com/minio/minio-go/v7 v7.3.0
 	github.com/samber/slog-sentry/v2 v2.11.0
