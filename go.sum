@@ -26,8 +26,8 @@ github.com/getsentry/sentry-go v0.49.0 h1:Ehejknu1l023Ub7QoRBVLAI7g3Jnhqku4oWx4B
 github.com/getsentry/sentry-go v0.49.0/go.mod h1:nuMJAoCfe1u0Bts2ocyNI+TW8HT84vRMqwA5Qq/SKUI=
 github.com/go-chi/chi/v5 v5.3.2 h1:5YQkICvTCSZ25hoRsyJazN0scjzKGiu4VAUc7H1o1nY=
 github.com/go-chi/chi/v5 v5.3.2/go.mod h1:R+tYY2hNuVUUjxoPtqUdgBqevM9s9njzkTLutVsOCto=
-github.com/go-chi/httplog/v3 v3.4.0 h1:gO4fvt8HEtFwHq926HoKe1aV2DymfPJuZy4+U4zwT3I=
-github.com/go-chi/httplog/v3 v3.4.0/go.mod h1:tDhJo9G+F4mioDgX4pKbyA0uVZwCtHejoSsDkvJkFkU=
+github.com/go-chi/httplog/v3 v3.5.0 h1:QTd0cRZGznBMC1J9hm4reEfgneV92hvSHOoPR97f/aE=
+github.com/go-chi/httplog/v3 v3.5.0/go.mod h1:tDhJo9G+F4mioDgX4pKbyA0uVZwCtHejoSsDkvJkFkU=
 github.com/go-chi/metrics v0.1.1 h1:CXhbnkAVVjb0k73EBRQ6Z2YdWFnbXZgNtg1Mboguibk=
 github.com/go-chi/metrics v0.1.1/go.mod h1:mcGTM1pPalP7WCtb+akNYFO/lwNwBBLCuedepqjoPn4=
 github.com/go-chi/traceid v0.3.0 h1:BYITxMnIeQasU7/U7+InZWANWxVZeCUBGTAqWleQOeg=
